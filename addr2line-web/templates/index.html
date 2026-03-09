@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线 addr2line 日志解析</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>在线 addr2line 日志解析</h1>
+        </header>
+        
+        <!-- 上传和工具链选择区域 -->
+        <section class="control-panel">
+            <div class="upload-section">
+                <h3>上传 ELF 文件</h3>
+                <div class="upload-area" id="upload-area">
+                    <input type="file" id="elf-file" accept=".elf,*" hidden>
+                    <div class="upload-prompt">
+                        <span class="upload-icon">📁</span>
+                        <p>点击或拖拽上传 yoc.elf 文件</p>
+                    </div>
+                    <div class="upload-progress" id="upload-progress" hidden>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progress-fill"></div>
+                        </div>
+                        <span class="progress-text" id="progress-text">上传中...</span>
+                    </div>
+                </div>
+                <div class="elf-info" id="elf-info" hidden>
+                    <h4>ELF 信息</h4>
+                    <p><strong>架构:</strong> <span id="elf-arch"></span></p>
+                    <p><strong>位宽:</strong> <span id="elf-bits"></span></p>
+                    <p><strong>字节序:</strong> <span id="elf-endian"></span></p>
+                </div>
+            </div>
+            
+            <div class="toolchain-section">
+                <h3>工具链选择</h3>
+                <div class="toolchain-selector">
+                    <label for="toolchain-select">选择 addr2line:</label>
+                    <select id="toolchain-select" disabled>
+                        <option value="">-- 请先上传 ELF 文件 --</option>
+                    </select>
+                </div>
+                <div class="current-toolchain" id="current-toolchain" hidden>
+                    <h4>当前工具链</h4>
+                    <p class="toolchain-name" id="toolchain-name"></p>
+                    <p class="toolchain-path" id="toolchain-path"></p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 状态消息 -->
+        <div class="status-bar" id="status-bar" hidden>
+            <span class="status-icon" id="status-icon"></span>
+            <span class="status-message" id="status-message"></span>
+        </div>
+        
+        <!-- 操作按钮区域 -->
+        <section class="action-bar">
+            <button class="btn btn-secondary" id="paste-btn">
+                <span class="btn-icon">📋</span> 粘贴日志
+            </button>
+            <button class="btn btn-primary" id="parse-btn" disabled>
+                <span class="btn-icon">🔍</span> 重新处理
+            </button>
+            <span class="result-count" id="result-count"></span>
+        </section>
+        
+        <!-- 主工作区 -->
+        <section class="workspace">
+            <div class="panel left-panel">
+                <div class="panel-header">
+                    <h3>原始文本（点击地址查看详情）</h3>
+                </div>
+                <div class="text-container" id="text-container">
+                    <div class="text-placeholder">
+                        <p>请先粘贴日志文本</p>
+                        <ol>
+                            <li>上传 yoc.elf 文件</li>
+                            <li>选择或确认工具链</li>
+                            <li>点击"粘贴日志"按钮</li>
+                            <li>点击"重新处理"按钮</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel right-panel">
+                <div class="panel-header">
+                    <h3>地址详情</h3>
+                </div>
+                <div class="detail-container" id="detail-container">
+                    <div class="detail-placeholder">
+                        <p>点击左侧地址查看详情</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 粘贴日志弹窗 -->
+        <div class="modal" id="paste-modal" hidden>
+            <div class="modal-content modal-large">
+                <div class="modal-header">
+                    <h3>粘贴日志文本</h3>
+                    <button class="modal-close" id="paste-modal-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <textarea 
+                        id="log-text" 
+                        placeholder="在此粘贴日志文本...&#10;&#10;例如:&#10;Exception at 0x80001234&#10;PC: 0x80005678&#10;backtrace: 0x80002000 0x80003000 0x80004000"
+                    ></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" id="paste-modal-clear">清空</button>
+                    <button class="btn btn-primary" id="paste-modal-confirm">确认</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="/static/app.js"></script>
+</body>
+</html>
