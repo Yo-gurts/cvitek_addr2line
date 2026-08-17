@@ -43,7 +43,16 @@ const elements = {
     pasteModalClear: document.getElementById('paste-modal-clear'),
     pasteModalConfirm: document.getElementById('paste-modal-confirm'),
     logText: document.getElementById('log-text'),
+
+    // 点击历史
+    historyCount: document.getElementById('history-count'),
+    historyClear: document.getElementById('history-clear'),
+    historyBody: document.getElementById('history-body'),
+    historyEmpty: document.getElementById('history-empty'),
+    historyList: document.getElementById('history-list'),
 };
+
+const HISTORY_MAX = 100;
 
 // 状态
 let state = {
@@ -54,6 +63,7 @@ let state = {
     parseResults: {},
     originalText: '',
     activeAddress: null,
+    history: [],
 };
 
 // ===================== 工具函数 =====================
@@ -472,6 +482,11 @@ async function showAddressDetail(address, clickedElement) {
     
     // 显示详情
     displayDetail(result);
+
+    // 记录点击历史（仅成功）
+    if (result.success) {
+        addHistory(result);
+    }
 }
 
 function displayDetail(result) {
@@ -488,13 +503,64 @@ function displayDetail(result) {
                 <label>解析结果</label>
                 <div class="value ${statusClass}">${escapeHtml(output)}</div>
             </div>
-            <div class="detail-item">
-                <label>工具链</label>
-                <div class="value">${state.selectedToolchain ? escapeHtml(state.selectedToolchain.name) : 'Unknown'}</div>
-            </div>
         </div>
     `;
 }
+
+// ===================== 点击历史 =====================
+
+function addHistory(result) {
+    const address = result.address;
+    // 单行结果：取第一行，去掉多余空白
+    const resultText = (result.result || '').split('\n')[0].trim() || '(无结果)';
+
+    // 去重：已存在相同地址则移到最前
+    const existingIdx = state.history.findIndex(h => h.address === address);
+    if (existingIdx !== -1) {
+        state.history.splice(existingIdx, 1);
+    }
+
+    state.history.unshift({ address, resultText });
+
+    // 限制最大数量
+    if (state.history.length > HISTORY_MAX) {
+        state.history.length = HISTORY_MAX;
+    }
+
+    renderHistory();
+}
+
+function renderHistory() {
+    elements.historyCount.textContent = state.history.length;
+
+    if (state.history.length === 0) {
+        elements.historyEmpty.hidden = false;
+        elements.historyList.innerHTML = '';
+        return;
+    }
+
+    elements.historyEmpty.hidden = true;
+    elements.historyList.innerHTML = state.history.map(h => `
+        <li class="history-item" data-addr="${escapeHtml(h.address)}" title="${escapeHtml(h.address + '  ' + h.resultText)}">
+            <span class="history-addr">${escapeHtml(h.address)}</span>
+            <span class="history-result">${escapeHtml(h.resultText)}</span>
+        </li>
+    `).join('');
+
+    // 点击历史项 -> 显示对应地址详情
+    elements.historyList.querySelectorAll('.history-item').forEach(el => {
+        el.addEventListener('click', () => {
+            const addr = el.dataset.addr;
+            const link = elements.textContainer.querySelector(`.addr-link[data-addr="${addr}"]`);
+            showAddressDetail(addr, link || null);
+        });
+    });
+}
+
+elements.historyClear.addEventListener('click', () => {
+    state.history = [];
+    renderHistory();
+});
 
 // ===================== 初始化 =====================
 
