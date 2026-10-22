@@ -1,5 +1,5 @@
 """
-在线 addr2line 日志解析服务
+CVITEK 工具箱 Web 服务
 """
 import os
 import uuid
@@ -19,7 +19,7 @@ MAX_CONTENT_LENGTH = 100 * 1024 * 1024  # 100MB
 PORT = int(os.environ.get('PORT', 8080))
 
 app = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY', 'addr2line-web-secret-key-change-in-production')
+app.secret_key = os.environ.get('SECRET_KEY', 'cvitek-toolbox-secret-key-change-in-production')
 app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_LENGTH
 
 # 初始化工具链管理器
@@ -76,8 +76,14 @@ def cleanup_old_sessions():
 
 @app.route('/')
 def index():
-    """首页"""
+    """Addr2line 工具页面"""
     return render_template('index.html')
+
+
+@app.route('/power-reason')
+def power_reason():
+    """MARS3 RTC 上下电原因解析页面"""
+    return render_template('power_reason.html')
 
 
 @app.route('/api/toolchains', methods=['GET'])

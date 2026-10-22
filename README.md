@@ -1,66 +1,38 @@
-## Docker 打包与运行
+# CVITEK 工具箱
 
-### 打包镜像
+面向 CVITEK 嵌入式开发的 Web 工具集合。目前提供两项功能，可通过页面底部的功能栏切换：
 
-在项目目录 `addr2line` 下执行：
+- **Addr2line**：上传 ELF 文件，解析日志中的地址并查看源码位置。
+- **Power on reason**：解析 MARS3 RTC 上下电原因寄存器，展示状态和触发信号。
 
-```bash
-tree .
-.
-├── addr2line-web
-├── Dockerfile
-├── host-tools
-└── README.md
-```
+## Docker 部署
 
-打包 docker 镜像：
+在仓库根目录构建镜像：
 
 ```bash
-docker build \
-  -f Dockerfile \
-  --build-arg APP_SRC=addr2line-web \
-  --build-arg HOST_TOOLS_SRC=host-tools \
-  --build-arg HOST_TOOLS_DST=/opt/host-tools \
-  -t addr2line-web:latest \
-  .
+docker build -t cvitek-toolbox:latest .
 ```
 
-### 运行容器
-
-```bash
-docker run --rm -it \
-  -p 8080:8080 \
-  -e PORT=8080 \
-  -e HOST_TOOLS_PATH=/opt/host-tools \
-  addr2line-web:latest
-```
-
-启动后访问: `http://localhost:8080`
-
-### 后台运行并开机自动启动
+启动服务：
 
 ```bash
 docker run -d \
-  --name addr2line-web \
+  --name cvitek-toolbox \
   --restart unless-stopped \
   -p 8080:8080 \
-  -e PORT=8080 \
-  -e HOST_TOOLS_PATH=/opt/host-tools \
-  addr2line-web:latest
+  cvitek-toolbox:latest
 ```
 
-- `-d`: 后台运行
-- `--restart unless-stopped`: Docker 服务或主机重启后自动拉起容器（手动停止除外）
+浏览器访问 `http://localhost:8080`。Power on reason 页面也可直接通过 `http://localhost:8080/power-reason` 打开。
 
-### 运行时指定工具链路径
+Docker 镜像会将仓库内 `host-tools/` 下的 addr2line 工具链安装到 `/opt/host-tools`。
 
-服务读取 `HOST_TOOLS_PATH` 环境变量。默认镜像内工具链路径为 `/opt/host-tools`，也可以在运行时改为其他路径：
+## 本地运行
 
 ```bash
-docker run --rm -it \
-  -p 8080:8080 \
-  -e PORT=8080 \
-  -e HOST_TOOLS_PATH=/custom/host-tools \
-  -v /data/song.yu/host-tools:/custom/host-tools:ro \
-  addr2line-web:latest
+cd addr2line-web
+pip install -r requirements.txt
+HOST_TOOLS_PATH=../host-tools python app.py
 ```
+
+默认监听 `0.0.0.0:8080`。可使用 `PORT` 修改端口，或用 `HOST_TOOLS_PATH` 指定 addr2line 工具链目录。

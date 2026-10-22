@@ -6,6 +6,7 @@
 }
 
 body {
+    zoom: 0.8;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     background-color: #f5f7fa;
     color: #333;
@@ -15,7 +16,7 @@ body {
 .container {
     max-width: 100%;
     margin: 0;
-    padding: 15px;
+    padding: 15px 15px 92px;
     min-height: 100vh;
 }
 
@@ -28,6 +29,58 @@ header {
 header h1 {
     color: #2c3e50;
     font-size: 1.8em;
+}
+
+/* 工具箱功能切换 */
+.feature-switch {
+    position: fixed;
+    z-index: 1000;
+    left: 50%;
+    bottom: 16px;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 6px;
+    width: min(440px, calc(100% - 24px));
+    padding: 6px;
+    border: 1px solid #e2e7ee;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: 0 6px 24px rgba(24, 48, 80, 0.18);
+    backdrop-filter: blur(12px);
+}
+
+.feature-switch-link {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    color: #526174;
+    text-align: center;
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s;
+}
+
+.feature-switch-link:hover {
+    background: #edf4fc;
+    color: #1565c0;
+}
+
+.feature-switch-link.active {
+    background: #1565c0;
+    color: #fff;
+}
+
+.feature-switch-title {
+    font-size: 0.85em;
+    font-weight: 700;
+}
+
+.feature-switch-description {
+    font-size: 0.72em;
+    opacity: 0.82;
 }
 
 /* 控制面板 */

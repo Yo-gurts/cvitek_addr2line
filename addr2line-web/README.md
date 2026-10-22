@@ -1,6 +1,6 @@
-# 在线 addr2line 日志解析服务
+# CVITEK 工具箱：Addr2line 日志解析
 
-一个基于 Web 的 addr2line 工具，用于在线解析嵌入式系统日志中的地址，将十六进制地址转换为函数名和源码行号。
+CVITEK 工具箱中的 Addr2line 功能，用于在线解析嵌入式系统日志中的地址，将十六进制地址转换为函数名和源码行号。工具箱还提供 MARS3 RTC 上下电原因解析页面，可通过 `/power-reason` 访问。
 
 ## 功能特性
 
@@ -21,7 +21,8 @@ addr2line-web/
 ├── README.md           # 本文件
 ├── sessions/           # 会话临时目录 (自动创建)
 ├── templates/
-│   └── index.html      # 前端页面
+│   ├── index.html      # Addr2line 页面
+│   └── power_reason.html # Power on reason 页面
 └── static/
     ├── style.css       # 样式
     └── app.js          # 前端交互逻辑
@@ -95,7 +96,8 @@ PORT=9000 HOST_TOOLS_PATH=/path/to/host-tools python app.py
 
 | 端点 | 方法 | 说明 |
 |------|------|------|
-| `GET /` | GET | 首页 |
+| `GET /` | GET | Addr2line 工具页面 |
+| `GET /power-reason` | GET | MARS3 RTC 上下电原因解析页面 |
 | `POST /api/upload` | POST | 上传 ELF 文件 |
 | `GET /api/toolchains` | GET | 获取所有可用工具链 |
 | `POST /api/select-toolchain` | POST | 手动选择工具链 |
